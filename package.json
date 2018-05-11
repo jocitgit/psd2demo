@@ -1,0 +1,10 @@
+{
+  "name": "psd2demo",
+  "version": "1.0.0",
+  "description": "COMP8058 Alexa Project",
+  "main": "index.js",
+  "dependencies": {
+    "alexa-sdk": "^1.0.25"
+  },
+  "author": "Joella Flood"
+}
