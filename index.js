@@ -7,7 +7,7 @@ const CLIENT_ID = 'cb8d8af2-2416-4ce5-bb6c-2344e09793ec';
 const CLIENT_SECRET = 'H2xH5gN2lX0aF3fH6cD7qN0hS3dV8fS2fH8eV3dO7uF0aM6kD4';
 
 const APP_ID = 'amzn1.ask.skill.b6e63153-71b2-4189-adde-fb75ec7a4860';
-const HELP_MESSAGE = 'You can say what is my balance, or, you can say exit... What can I help you with?';
+const HELP_MESSAGE = 'You can say what is my balance, or, you can say stop... What can I help you with?';
 const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye!';
 
@@ -23,7 +23,8 @@ exports.handler = function(event, context, callback) {
 const handlers = {
     'LaunchRequest': function () {
         console.log('LaunchRequest');
-        this.emit('AccountBalanceIntent');
+        //this.emit('AccountBalanceIntent');
+        this.emit('AMAZON.HelpIntent');
     },
     'AccountBalanceIntent': function () {
         console.log('AccountBalanceIntent');
