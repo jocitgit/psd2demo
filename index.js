@@ -26,12 +26,23 @@ const handlers = {
         //this.emit('AccountBalanceIntent');
         this.emit('AMAZON.HelpIntent');
     },
+    'AccountSummaryIntent': function () {
+        console.log('AccountSummaryIntent');
+        this.emit('AMAZON.HelpIntent');
+    },
     'AccountBalanceIntent': function () {
         console.log('AccountBalanceIntent');
         console.log('Dialog State: ' + this.event.request.dialogState);
+        console.log('Slot value: ' + this.event.request.intent.slots.AccountEnding.value);
         if (this.event.request.dialogState !== 'COMPLETED') {
             return this.emit(':delegate');
         }
+        var slotValue = this.event.request.intent.slots.AccountEnding.value;
+        if (slotValue == undefined || isNaN(slotValue) || slotValue.length != 4) {
+            this.response.speak(slotValue + ' is not a four digit number');
+            return this.emit(':responseReady');
+        }
+
 
         if (this.event.session.user.accessToken == undefined) {
             console.log('Access token undefined');
@@ -139,3 +150,5 @@ const handlers = {
         this.emit(':responseReady');
     }
 };
+
+
