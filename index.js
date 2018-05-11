@@ -28,6 +28,11 @@ const handlers = {
     },
     'AccountBalanceIntent': function () {
         console.log('AccountBalanceIntent');
+        console.log('Dialog State: ' + this.event.request.dialogState);
+        if (this.event.request.dialogState !== 'COMPLETED') {
+            return this.emit(':delegate');
+        }
+
         if (this.event.session.user.accessToken == undefined) {
             console.log('Access token undefined');
             //this.emit(':tellWithLinkAccountCard', 'to start using this skill, please use the companion app to authorize access');
