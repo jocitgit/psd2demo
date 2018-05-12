@@ -21,28 +21,16 @@ exports.handler = function(event, context, callback) {
 };
 
 const handlers = {
+    'Unhandled': function () {
+        console.log('Unhandled');
+        this.emit('AMAZON.HelpIntent');
+    },
     'LaunchRequest': function () {
         console.log('LaunchRequest');
-        //this.emit('AccountBalanceIntent');
         this.emit('AMAZON.HelpIntent');
     },
     'AccountSummaryIntent': function () {
         console.log('AccountSummaryIntent');
-        this.emit('AMAZON.HelpIntent');
-    },
-    'AccountBalanceIntent': function () {
-        console.log('AccountBalanceIntent');
-        console.log('Dialog State: ' + this.event.request.dialogState);
-        console.log('Slot value: ' + this.event.request.intent.slots.AccountEnding.value);
-        if (this.event.request.dialogState !== 'COMPLETED') {
-            return this.emit(':delegate');
-        }
-        var slotValue = this.event.request.intent.slots.AccountEnding.value;
-        if (slotValue == undefined || isNaN(slotValue) || slotValue.length != 4) {
-            this.response.speak(slotValue + ' is not a four digit number');
-            return this.emit(':responseReady');
-        }
-
         if (this.event.session.user.accessToken == undefined) {
             console.log('Access token undefined');
             //this.emit(':tellWithLinkAccountCard', 'to start using this skill, please use the companion app to authorize access');
@@ -68,7 +56,60 @@ const handlers = {
                 if (speech != '') {
                     this.response.speak(speech);
                 } else {
-                    this.response.speak('There is no balance for this account');
+                    this.response.speak('There are no account balances listed');
+                }
+                this.emit(':responseReady');
+            });
+
+        }
+    },
+    'AccountBalanceIntent': function () {
+        console.log('AccountBalanceIntent');
+        console.log('Dialog State: ' + this.event.request.dialogState);
+        console.log('Slot value: ' + this.event.request.intent.slots.AccountEnding.value);
+        if (this.event.request.dialogState !== 'COMPLETED') {
+            return this.emit(':delegate');
+        }
+        var slotValue = this.event.request.intent.slots.AccountEnding.value;
+        if (slotValue == undefined || isNaN(slotValue) || slotValue.length != 4) {
+            this.response.speak(slotValue + ' is not a four digit number');
+            return this.emit(':responseReady');
+        }
+
+        if (this.event.session.user.accessToken === undefined) {
+            console.log('Access token undefined');
+            //this.emit(':tellWithLinkAccountCard', 'to start using this skill, please use the companion app to authorize access');
+            this.response.speak('to start using this skill, please use the companion app to authorize access')
+                .linkAccountCard()
+                .shouldEndSession(true);
+            this.emit(':responseReady');
+        } else {
+            console.log('Access token found');
+            retrieveData.call(this, this.event.session.user.accessToken, (accounts) => {
+                var speech = '';
+                var accountNumber = '';
+                var found = false;
+                if (!Array.isArray(accounts)) {
+                    accounts = [accounts]; // Convert single account object to array if required
+                }
+                for (var i=0; i<accounts.length; i++) {
+                    accountNumber = accounts[i].accountNumber.value;
+                    if (accountNumber.substr(accountNumber.length-4)===slotValue) {
+                        found=true;
+                        if (accounts[i].availableBalance != null) {
+                            speech += 'The available balance for account ending <say-as interpret-as="digits">' + accountNumber.substr(accountNumber.length-4) + '</say-as> ';
+                            speech += 'is <say-as interpret-as="cardinal">' + accounts[i].availableBalance + '</say-as><break time="1s"/> ';
+                        }
+                        break;
+                    }
+                }
+                if (!found) {
+                    speech = 'I could not find an account ending <say-as interpret-as="digits">' + slotValue + '</say-as>';
+                }
+                if (speech != '') {
+                    this.response.speak(speech);
+                } else {
+                    this.response.speak('There is no balance listed for this account');
                 }
                 this.emit(':responseReady');
             });
