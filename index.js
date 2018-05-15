@@ -31,7 +31,7 @@ const handlers = {
     },
     'AccountSummaryIntent': function () {
         console.log('AccountSummaryIntent');
-        if (this.event.session.user.accessToken == undefined) {
+        if (this.event.session.user.accessToken === undefined) {
             console.log('Access token undefined');
             //this.emit(':tellWithLinkAccountCard', 'to start using this skill, please use the companion app to authorize access');
             this.response.speak('to start using this skill, please use the companion app to authorize access')
@@ -71,7 +71,7 @@ const handlers = {
             return this.emit(':delegate');
         }
         var slotValue = this.event.request.intent.slots.AccountEnding.value;
-        if (slotValue == undefined || isNaN(slotValue) || slotValue.length != 4) {
+        if (slotValue === undefined || isNaN(slotValue) || slotValue.length != 4) {
             this.response.speak(slotValue + ' is not a four digit number');
             return this.emit(':responseReady');
         }
