@@ -1,0 +1,116 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "p. s. d. two demo",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AccountBalanceIntent",
+                    "slots": [
+                        {
+                            "name": "AccountEnding",
+                            "type": "AMAZON.FOUR_DIGIT_NUMBER",
+                            "samples": [
+                                "zero zero zero zero",
+                                "one two three four"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "the balance for account {AccountEnding}",
+                        "the balance on account {AccountEnding}",
+                        "give me the balance on account {AccountEnding}",
+                        "give me the balance for account {AccountEnding}",
+                        "tell me the balance for account {AccountEnding}",
+                        "tell me the balance on account {AccountEnding}",
+                        "what is the balance on account {AccountEnding}",
+                        "what is the balance for account {AccountEnding}",
+                        "give me the balance on account ending {AccountEnding}",
+                        "give me the balance for account ending {AccountEnding}",
+                        "the balance for account ending {AccountEnding}",
+                        "the balance on account ending {AccountEnding}",
+                        "tell me the balance on account ending {AccountEnding}",
+                        "tell me the balance for account ending {AccountEnding}",
+                        "what is the balance on account ending {AccountEnding}",
+                        "what is the balance for account ending {AccountEnding}",
+                        "tell me my account balance",
+                        "tell me my balance",
+                        "my balance",
+                        "my account balance",
+                        "give me my account balance",
+                        "what is my account balance",
+                        "give me my balance",
+                        "what is my balance"
+                    ]
+                },
+                {
+                    "name": "AccountSummaryIntent",
+                    "slots": [],
+                    "samples": [
+                        "give me my summary",
+                        "my summary",
+                        "tell me my summary",
+                        "what is my summary",
+                        "give me my account summary",
+                        "my account summary",
+                        "tell me my account summary",
+                        "what is my account summary"
+                    ]
+                }
+            ],
+            "types": []
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "AccountBalanceIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "AccountEnding",
+                            "type": "AMAZON.FOUR_DIGIT_NUMBER",
+                            "confirmationRequired": true,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "confirmation": "Confirm.Slot.431792320838.1374709242512",
+                                "elicitation": "Elicit.Slot.431792320838.1374709242512"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.431792320838.1374709242512",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "What are the last four digits of the account number?"
+                    }
+                ]
+            },
+            {
+                "id": "Confirm.Slot.431792320838.1374709242512",
+                "variations": [
+                    {
+                        "type": "SSML",
+                        "value": "<speak>Account ending <say-as interpret-as='digits'>{AccountEnding}</say-as> , is that right?</speak>"
+                    }
+                ]
+            }
+        ]
+    }
+}
