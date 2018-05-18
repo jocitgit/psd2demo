@@ -38,7 +38,7 @@ const handlers = {
                 .linkAccountCard()
                 .shouldEndSession(true);
             this.emit(':responseReady');
-        } else {
+        } else { 
             console.log('Access token found');
             retrieveData.call(this, this.event.session.user.accessToken, (accounts) => {
                 var speech = '';
@@ -60,10 +60,10 @@ const handlers = {
                 }
                 this.emit(':responseReady');
             });
-
-        }
+            
+        }  
     },
-    'AccountBalanceIntent': function () {
+     'AccountBalanceIntent': function () {
         console.log('AccountBalanceIntent');
         console.log('Dialog State: ' + this.event.request.dialogState);
         console.log('Slot value: ' + this.event.request.intent.slots.AccountEnding.value);
@@ -75,7 +75,7 @@ const handlers = {
             this.response.speak(slotValue + ' is not a four digit number');
             return this.emit(':responseReady');
         }
-
+        
         if (this.event.session.user.accessToken === undefined) {
             console.log('Access token undefined');
             //this.emit(':tellWithLinkAccountCard', 'to start using this skill, please use the companion app to authorize access');
@@ -83,7 +83,7 @@ const handlers = {
                 .linkAccountCard()
                 .shouldEndSession(true);
             this.emit(':responseReady');
-        } else {
+        } else { 
             console.log('Access token found');
             retrieveData.call(this, this.event.session.user.accessToken, (accounts) => {
                 var speech = '';
@@ -113,9 +113,9 @@ const handlers = {
                 }
                 this.emit(':responseReady');
             });
-
-        }
-
+            
+        }  
+        
     },
     'AMAZON.HelpIntent': function () {
         const speechOutput = HELP_MESSAGE;
@@ -135,66 +135,66 @@ const handlers = {
 };
 
 function retrieveData(accessToken, callback) {
-
+    
     var headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + accessToken,
-        'X-IBM-Client-Id': CLIENT_ID,
-        'X-IBM-Client-Secret': CLIENT_SECRET
-    };
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + accessToken,
+                'X-IBM-Client-Id': CLIENT_ID,
+                'X-IBM-Client-Secret': CLIENT_SECRET
+            };
+     
 
-
-    var options = {
-        hostname: HOSTNAME,
-        path: PATH,
-        method: 'GET',
-        headers: headers
-    };
-
-    var body = '';
-
-    https.get(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-
-        res.on('data', (data) => {
-            body += data;
-        });
-
-        res.on('end', () => {
-            console.log('data complete');
-
-            var responseObject = JSON.parse(body);
-
-            switch (res.statusCode) {
-                case 401: // access code issue
-                    console.log(JSON.stringify(responseObject));
-                    this.response.speak('There was a problem accessing your account. Please try linking your account again in the companion app')
-                        .linkAccountCard()
-                        .shouldEndSession(true);
-                    break;
-                case 403: // authorization level issue
-                    console.log(JSON.stringify(responseObject));
-                    this.response.speak('I am not authorized to access your accounts. Please grant permission using the companion app')
-                        .linkAccountCard()
-                        .shouldEndSession(true);
-                    break;
-                case 200: // OK
-                    var accounts = responseObject.response.accounts;
-                    if (accounts == null) {
-                        this.response.speak('There are no accounts listed');
-                        break;
+            var options = {
+                hostname: HOSTNAME,
+                path: PATH,
+                method: 'GET',
+                headers: headers
+            };
+            
+            var body = '';
+            
+            https.get(options, (res) => {
+                console.log('statusCode:', res.statusCode);
+                
+                res.on('data', (data) => {
+                    body += data;
+                });
+                
+                 res.on('end', () => {
+                    console.log('data complete');
+                
+                    var responseObject = JSON.parse(body);
+                    
+                    switch (res.statusCode) {
+                        case 401: // access code issue
+                            console.log(JSON.stringify(responseObject));
+                            this.response.speak('There was a problem accessing your account. Please try linking your account again in the companion app')
+                                .linkAccountCard()
+                                .shouldEndSession(true);
+                            break;
+                        case 403: // authorization level issue
+                            console.log(JSON.stringify(responseObject));
+                            this.response.speak('I am not authorized to access your accounts. Please grant permission using the companion app')
+                            .linkAccountCard()
+                            .shouldEndSession(true);
+                            break;
+                        case 200: // OK
+                            var accounts = responseObject.response.accounts;
+                            if (accounts == null) {
+                                this.response.speak('There are no accounts listed');
+                                break;
+                            }
+                            return callback(accounts);
+                        default:
+                            console.log(JSON.stringify(responseObject));
+                            this.response.speak('I am sorry. An unexpected error has occurred');
                     }
-                    return callback(accounts);
-                default:
-                    console.log(JSON.stringify(responseObject));
-                    this.response.speak('I am sorry. An unexpected error has occurred');
-            }
-            this.emit(':responseReady');
-        });
-
-    }).on('error', (e) => {
-        console.error(e);
-        this.emit(':tell', 'I am currently unable to access your account information. Please try again later');
-    })
+                    this.emit(':responseReady');
+                });
+                
+            }).on('error', (e) => {
+                console.error(e);
+                this.emit(':tell', 'I am currently unable to access your account information. Please try again later');
+            })
 }
